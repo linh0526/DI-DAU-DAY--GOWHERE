@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { X, Bookmark, Clock, Banknote, MapPin, Phone, FileText, AlertTriangle, Sparkles, ExternalLink } from 'lucide-react';
+import { X, Bookmark, Clock, Banknote, MapPin, Phone, FileText, AlertTriangle, Sparkles, ExternalLink, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Location, User } from '@/types';
 
@@ -147,9 +147,18 @@ export default function LocationDetailModal({
           <div className="max-w-3xl mx-auto">
               <div className="mb-10 text-center md:text-left">
                 <div className="flex flex-wrap justify-center md:justify-start gap-1.5 mb-6">
-                  {location.tags.map(t => <span key={t} className="px-4 py-1.5 bg-slate-50 text-slate-500 rounded-lg text-[9px] font-black uppercase tracking-wider border border-slate-100">#{t}</span>)}
+                  {location.tags.map(t => <span key={t} className="px-4 py-1.5 bg-slate-50 text-slate-500 rounded-lg text-[9px] font-black uppercase tracking-wider border border-slate-100">{t}</span>)}
                 </div>
                 <h2 className="text-4xl font-black uppercase tracking-tighter leading-tight text-slate-900">{location.name}</h2>
+                <div className="flex items-center justify-center md:justify-start gap-4 mt-4 mb-2">
+                  <div className="flex items-center gap-1 bg-amber-50 px-3 py-1.5 rounded-xl border border-amber-100">
+                    <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+                    <span className="text-sm font-black text-amber-700">{location.googleRating?.toFixed(1) || '0.0'}</span>
+                  </div>
+                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                    {location.googleReviewCount?.toLocaleString('vi-VN') || 0} Đánh giá từ Google Maps
+                  </div>
+                </div>
                 <div className="w-10 h-1 bg-amber-600 rounded-full mx-auto md:mx-0 mb-10"></div>
               </div>
 

@@ -28,6 +28,8 @@ interface Location {
   upvotes: number;
   views: number;
   saves: number;
+  googleRating?: number;
+  googleReviewCount?: number;
   feedback: any[];
   reports: any[];
 }
@@ -42,10 +44,13 @@ interface AdminLocationsTabProps {
   adminCity: string;
   adminDistrict: string;
   adminStatus: string;
+  adminTag: string;
+  allTags: any[];
   setAdminSearch: (v: string) => void;
   setAdminCity: (v: string) => void;
   setAdminDistrict: (v: string) => void;
   setAdminStatus: (v: string) => void;
+  setAdminTag: (v: string) => void;
   onOpenCreate: () => void;
   onOpenEdit: (loc: Location) => void;
   onDelete: (id: string) => void;
@@ -65,10 +70,13 @@ export default function AdminLocationsTab({
   adminCity,
   adminDistrict,
   adminStatus,
+  adminTag,
+  allTags,
   setAdminSearch,
   setAdminCity,
   setAdminDistrict,
   setAdminStatus,
+  setAdminTag,
   onOpenCreate,
   onOpenEdit,
   onDelete,
@@ -89,7 +97,7 @@ export default function AdminLocationsTab({
   // Reset page when filter changes
   useMemo(() => {
     setCurrentPage(1);
-  }, [adminSearch, adminCity, adminDistrict, adminStatus]);
+  }, [adminSearch, adminCity, adminDistrict, adminStatus, adminTag]);
 
   const isAllSelected = filteredLocations.length > 0 && selectedLocations.length === filteredLocations.length;
 
@@ -184,6 +192,19 @@ export default function AdminLocationsTab({
               <option value="inactive">Tạm ngưng</option>
               <option value="maintenance">Sửa chữa</option>
               <option value="closed">Đã đóng</option>
+            </select>
+
+            <select
+              value={adminTag}
+              onChange={(e) => setAdminTag(e.target.value)}
+              className="px-6 py-4.5 bg-white border-2 border-slate-100 rounded-2xl text-[10px] font-black uppercase tracking-widest outline-none focus:border-amber-600 shadow-sm"
+            >
+              <option value="all">🏷️ Phân loại</option>
+              {allTags.filter(t => t.status === 'approved').map((tag) => (
+                <option key={tag._id} value={tag.name}>
+                  {tag.name}
+                </option>
+              ))}
             </select>
 
             {selectedLocations.length > 0 && (
@@ -290,6 +311,11 @@ export default function AdminLocationsTab({
                           💰 {loc.priceSegment}
                         </p>
                       )}
+                      {loc.googleRating ? (
+                        <div className="flex items-center gap-1.5 px-2 py-0.5 bg-amber-50 text-amber-700 rounded-lg text-[8px] font-black uppercase tracking-widest border border-amber-100/50 w-fit">
+                           ⭐ {loc.googleRating.toFixed(1)} ({loc.googleReviewCount?.toLocaleString('vi-VN')})
+                        </div>
+                      ) : null}
                       <div className="flex flex-wrap gap-1">
                         {loc.tags.slice(0, 2).map((t) => (
                           <span

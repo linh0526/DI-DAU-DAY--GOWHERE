@@ -29,6 +29,8 @@ interface Location {
   address: string;
   coordinates?: { lat: number, lng: number };
   googleMapsUrl?: string;
+  googleRating?: number;
+  googleReviewCount?: number;
   phoneNumber?: string;
   openingHours?: { open: string, close: string };
   priceSegment: string;
@@ -95,6 +97,7 @@ export default function AdminDashboard() {
   const [adminCity, setAdminCity] = useState('all');
   const [adminDistrict, setAdminDistrict] = useState('all');
   const [adminStatus, setAdminStatus] = useState('all');
+  const [adminTag, setAdminTag] = useState('all');
   const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
   
   const fetchTags = async () => {
@@ -244,6 +247,8 @@ export default function AdminDashboard() {
     facebookUrl: '',
     website: '',
     googleMapsUrl: '',
+    googleRating: 0,
+    googleReviewCount: 0,
     status: 'active' as string
   });
   const [customTag, setCustomTag] = useState('');
@@ -325,6 +330,8 @@ export default function AdminDashboard() {
       facebookUrl: loc.facebookUrl || '',
       website: loc.website || '',
       googleMapsUrl: loc.googleMapsUrl || '',
+      googleRating: loc.googleRating || 0,
+      googleReviewCount: loc.googleReviewCount || 0,
       status: loc.status || 'active'
     });
     setIsAdding(true);
@@ -354,6 +361,8 @@ export default function AdminDashboard() {
           tags: formData.tags,
           note: formData.note,
           image: formData.image || undefined,
+          googleRating: formData.googleRating,
+          googleReviewCount: formData.googleReviewCount,
           status: formData.status
         }),
       });
@@ -366,7 +375,8 @@ export default function AdminDashboard() {
           name: '', city: 'hanoi', district: '', address: '', lat: 0, lng: 0,
           priceSegment: '', tags: [], note: '', phone: '',
           open: '08:00', close: '22:00', menu: '', image: '', 
-          facebookUrl: '', website: '', googleMapsUrl: '', status: 'active'
+          facebookUrl: '', website: '', googleMapsUrl: '', 
+          googleRating: 0, googleReviewCount: 0, status: 'active'
         });
         fetchLocations();
       } else {
@@ -519,9 +529,16 @@ export default function AdminDashboard() {
             const googleMapsUrl = row['Link Maps'] || row['Google Maps URL'] || '';
             const extraTags = row['Tag'] || row['Tags'] || '';
             const website = row['Website'] || '';
+            const parseExcelNum = (val: any) => {
+              if (val === undefined || val === null) return 0;
+              if (typeof val === 'number') return val;
+              return parseFloat(String(val).replace(',', '.')) || 0;
+            };
+            const googleRating = parseExcelNum(row['Đánh giá'] || row['Rating'] || row['Sao'] || row['googleRating']);
+            const googleReviewCount = Math.floor(parseExcelNum(row['Số bài đánh giá']));
 
             // 1. Parse District and City from mapsCategory (format: "District - Province/City")
-            let city = 'hanoi';
+            let city = 'tiengiang';
             let district = '';
             
             if (mapsCategory && mapsCategory.includes('-')) {
@@ -609,6 +626,8 @@ export default function AdminDashboard() {
               tags: finalTags,
               note: note || mapsCategory, // Use mapsCategory as secondary note if available
               image: imageUrl || undefined,
+              googleRating,
+              googleReviewCount,
               status: 'active'
             };
 
@@ -679,9 +698,10 @@ export default function AdminDashboard() {
       const matchCity = adminCity === 'all' || loc.city === adminCity;
       const matchDistrict = adminDistrict === 'all' || loc.district === adminDistrict;
       const matchStatus = adminStatus === 'all' || loc.status === adminStatus;
-      return matchSearch && matchCity && matchDistrict && matchStatus;
+      const matchTag = adminTag === 'all' || loc.tags.includes(adminTag);
+      return matchSearch && matchCity && matchDistrict && matchStatus && matchTag;
     });
-  }, [locations, adminSearch, adminCity, adminDistrict, adminStatus]);
+  }, [locations, adminSearch, adminCity, adminDistrict, adminStatus, adminTag]);
 
   if (!mounted) return (
     <div className="fixed inset-0 z-[1000] flex flex-col items-center justify-center bg-white">
@@ -794,12 +814,15 @@ export default function AdminDashboard() {
             adminCity={adminCity}
             adminDistrict={adminDistrict}
             adminStatus={adminStatus}
+            adminTag={adminTag}
+            allTags={allTags}
             cities={cities}
             setAdminSearch={setAdminSearch}
             setAdminCity={setAdminCity}
             setAdminDistrict={setAdminDistrict}
             setAdminStatus={setAdminStatus}
-            onOpenCreate={() => { setEditingId(null); setFormData({ name: '', city: 'hanoi', district: '', address: '', lat: 0, lng: 0, priceSegment: '', tags: [], note: '', phone: '', open: '08:00', close: '22:00', menu: '', image: '', facebookUrl: '', website: '', googleMapsUrl: '', status: 'active' }); setIsAdding(true); }}
+            setAdminTag={setAdminTag}
+            onOpenCreate={() => { setEditingId(null); setFormData({ name: '', city: 'hanoi', district: '', address: '', lat: 0, lng: 0, priceSegment: '', tags: [], note: '', phone: '', open: '08:00', close: '22:00', menu: '', image: '', facebookUrl: '', website: '', googleMapsUrl: '', googleRating: 0, googleReviewCount: 0, status: 'active' }); setIsAdding(true); }}
             onOpenEdit={handleOpenEdit as any}
             onDelete={handleDelete}
             onBulkDelete={handleBulkDeleteLocations}

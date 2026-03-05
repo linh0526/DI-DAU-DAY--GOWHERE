@@ -24,6 +24,8 @@ export interface Location {
   upvotes: number;
   status?: string;
   googleMapsUrl?: string;
+  googleRating?: number;
+  googleReviewCount?: number;
   feedback: Feedback[];
   coordinates: { lat: number; lng: number };
   views: number;

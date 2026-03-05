@@ -27,6 +27,8 @@ interface LocationFormData {
   facebookUrl: string;
   website: string;
   googleMapsUrl: string;
+  googleRating: number;
+  googleReviewCount: number;
   status: string;
 }
 
@@ -273,6 +275,33 @@ export default function AdminLocationFormModal({
                   value={formData.googleMapsUrl}
                   onChange={(e) => onParseGoogleMapsUrl(e.target.value)}
                   className="w-full bg-slate-50 border-2 border-slate-100 rounded-3xl py-4.5 px-8 pr-32 text-sm font-bold outline-none focus:bg-white focus:border-emerald-500 transition-all font-outfit"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-8">
+              <div className="space-y-3">
+                <label className="text-xs font-black uppercase tracking-widest text-slate-400 ml-4">
+                  Google Rating
+                </label>
+                <input
+                  type="number"
+                  step="0.1"
+                  min="0"
+                  max="5"
+                  value={formData.googleRating}
+                  onChange={(e) => setFormData({ ...formData, googleRating: parseFloat(e.target.value) || 0 })}
+                  className="w-full bg-slate-50 border-2 border-slate-100 rounded-3xl py-4.5 px-8 text-sm font-bold outline-none focus:bg-white focus:border-amber-600 transition-all"
+                />
+              </div>
+              <div className="space-y-3">
+                <label className="text-xs font-black uppercase tracking-widest text-slate-400 ml-4">
+                  Google Review Count
+                </label>
+                <input
+                  type="number"
+                  value={formData.googleReviewCount}
+                  onChange={(e) => setFormData({ ...formData, googleReviewCount: parseInt(e.target.value) || 0 })}
+                  className="w-full bg-slate-50 border-2 border-slate-100 rounded-3xl py-4.5 px-8 text-sm font-bold outline-none focus:bg-white focus:border-amber-600 transition-all"
                 />
               </div>
             </div>

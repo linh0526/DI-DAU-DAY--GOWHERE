@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { MapPin, ExternalLink, MessageSquare, Quote, Clock, ArrowUpDown, Bookmark } from 'lucide-react';
+import { MapPin, ExternalLink, MessageSquare, Quote, Clock, ArrowUpDown, Bookmark, Star } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Location, User } from '@/types';
 
@@ -193,6 +193,20 @@ export default function Home() {
 
   const topSaved = useMemo(() => {
     return [...locations].sort((a, b) => (b.likes || 0) - (a.likes || 0)).slice(0, 5);
+  }, [locations]);
+
+  const topRated = useMemo(() => {
+    // Dampening factor: locations with fewer than this many reviews will have their score pulled down
+    const m = 50; 
+    
+    return [...locations]
+      .filter(loc => loc.googleRating)
+      .sort((a, b) => {
+        const scoreA = (a.googleRating || 0) * ((a.googleReviewCount || 0) / ((a.googleReviewCount || 0) + m));
+        const scoreB = (b.googleRating || 0) * ((b.googleReviewCount || 0) / ((b.googleReviewCount || 0) + m));
+        return scoreB - scoreA;
+      })
+      .slice(0, 5);
   }, [locations]);
 
   const handleCityChange = (cityId: string) => {
@@ -415,6 +429,46 @@ export default function Home() {
                   <div className="flex items-center gap-1.5 mt-1">
                     <Bookmark className="w-3 h-3 text-amber-600 fill-amber-600" />
                     <span className="text-[10px] font-black text-slate-400">{loc.likes || 0} lượt lưu</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TOP RATED RANKING SECTION */}
+      {topRated.length > 0 && (
+        <div className="max-w-7xl mx-auto px-6 pb-24">
+          <div className="bg-white rounded-[4rem] border-4 border-slate-100 p-12 shadow-sm">
+            <div className="flex items-center gap-4 mb-10">
+              <div className="w-12 h-12 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center shadow-sm border border-amber-100">
+                <Star className="w-6 h-6 fill-amber-600" />
+              </div>
+              <div>
+                <h3 className="text-2xl font-black uppercase tracking-tight text-slate-900">Bảng xếp hạng Sao Sịn</h3>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Những quán có đánh giá cao nhất từ Google Maps</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+              {topRated.map((loc, idx) => (
+                <div 
+                  key={loc._id} 
+                  className="group cursor-pointer relative"
+                  onClick={() => handleSelectLocation(loc)}
+                >
+                  <div className="aspect-[4/5] rounded-3xl overflow-hidden mb-4 border-2 border-slate-50 shadow-inner group-hover:border-amber-600 transition-all">
+                    <img src={loc.image} alt={loc.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <div className="absolute top-3 left-3 w-8 h-8 bg-slate-900 text-white rounded-xl flex items-center justify-center font-black text-xs shadow-xl border border-white/20">
+                      {idx + 1}
+                    </div>
+                  </div>
+                  <h4 className="font-black text-[11px] uppercase tracking-tight text-slate-900 group-hover:text-amber-600 truncate">{loc.name}</h4>
+                  <div className="flex items-center gap-1.5 mt-1">
+                    <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
+                    <span className="text-[10px] font-black text-slate-900">{loc.googleRating?.toFixed(1)}</span>
+                    <span className="text-[10px] font-bold text-slate-300">({loc.googleReviewCount?.toLocaleString('vi-VN')})</span>
                   </div>
                 </div>
               ))}

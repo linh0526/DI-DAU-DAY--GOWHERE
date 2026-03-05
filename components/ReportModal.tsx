@@ -48,7 +48,7 @@ export default function ReportModal({
                 <textarea 
                   value={reportText}
                   onChange={(e) => setReportText(e.target.value)}
-                  placeholder="Vd: Quán đã đóng cửa, sai địa chỉ, hoặc thực đơn đã thay đổi..." 
+                  placeholder="Vd: Quán đã đóng cửa, sai địa chỉ, ảnh bị mờ, sai thông tin, spam..." 
                   className="w-full p-6 bg-slate-50 border-2 border-slate-100 rounded-3xl outline-none text-sm font-medium min-h-[140px] focus:border-amber-600 transition-all" 
                 />
             </div>

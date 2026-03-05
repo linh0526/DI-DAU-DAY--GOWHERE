@@ -1,6 +1,6 @@
 'use client';
 
-import { Bookmark, Heart, MapPin } from 'lucide-react';
+import { Bookmark, Heart, MapPin, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Location } from '@/types';
 
@@ -49,15 +49,21 @@ export default function LocationCard({ location, onClick, onLike }: LocationCard
              </button>
          </div>
 
-         {/* Bottom overlay: Price */}
-         {location.priceSegment && (
-           <div className="absolute bottom-5 left-5 pointer-events-none">
-              <div className="px-3 py-1.5 bg-black/40 backdrop-blur-md text-white/90 text-[10px] font-black tracking-[0.2em] rounded-lg border border-white/10">
-                {location.priceSegment}
-              </div>
-           </div>
-         )}
-      </div>
+          {/* Bottom overlay: Price & Rating */}
+          <div className="absolute bottom-5 left-5 right-5 flex justify-between items-center pointer-events-none">
+             {location.priceSegment && (
+               <div className="px-3 py-1.5 bg-black/40 backdrop-blur-md text-white/90 text-[10px] font-black tracking-[0.2em] rounded-lg border border-white/10">
+                 {location.priceSegment}
+               </div>
+             )}
+             {location.googleRating ? (
+               <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white/90 backdrop-blur-md rounded-xl shadow-lg border border-slate-100">
+                 <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
+                 <span className="text-[10px] font-black text-slate-800">{location.googleRating.toFixed(1)}</span>
+               </div>
+             ) : null}
+          </div>
+       </div>
 
       <div className="px-4 py-4">
          <h3 className="font-black text-lg leading-tight uppercase tracking-tight text-slate-900 group-hover:text-amber-600 transition-colors mb-2 line-clamp-2">

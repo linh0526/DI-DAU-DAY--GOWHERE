@@ -10,6 +10,8 @@ const LocationSchema = new Schema({
         lng: { type: Number, default: 0 }
     },
     googleMapsUrl: String,
+    googleRating: { type: Number, default: 0 },
+    googleReviewCount: { type: Number, default: 0 },
     phoneNumber: String,
     facebookUrl: String,
     website: String,
